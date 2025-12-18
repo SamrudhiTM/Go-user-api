@@ -2,3 +2,8 @@
 bin/
 tmp/
 *.log
+# All Go files
+*.go text eol=lf
+
+# SQL files
+*.sql text eol=lf

@@ -6,7 +6,7 @@ sql:
     queries: "db/sqlc/queries/users.sql"
     gen:
       go:
-        package: "db"
+        package: "generated" # ✅ must match your import
         out: "db/sqlc/generated"
         sql_package: "database/sql"
         emit_json_tags: true
