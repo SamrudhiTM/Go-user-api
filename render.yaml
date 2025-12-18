@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: go-user-api
+    env: go
+    buildCommand: go build -o app
+    envVars:
+      GO_VERSION: 1.25.5
