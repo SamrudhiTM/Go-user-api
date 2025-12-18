@@ -2,7 +2,9 @@ package main
 
 import (
 	"database/sql"
+	"log"
 
+	"github.com/SamrudhiTM/user_api/config"
 	"github.com/SamrudhiTM/user_api/db/sqlc/generated"
 	"github.com/SamrudhiTM/user_api/internal/handler"
 	"github.com/SamrudhiTM/user_api/internal/logger"
@@ -16,6 +18,10 @@ import (
 )
 
 func main() {
+	// Load configuration
+	cfg := config.Load()
+
+	// Initialize logger
 	logger.Init()
 	defer logger.Sync()
 
@@ -45,13 +51,14 @@ func main() {
 	app.Use(middleware.RequestID())
 	app.Use(middleware.RequestLogger())
 
-	// DB
-	db, err := sql.Open("postgres", "postgres://postgres:Sam%40282004@localhost:5432/go_user_api?sslmode=disable")
+	// Database
+	db, err := sql.Open("postgres", cfg.DBUrl)
 	if err != nil {
 		logger.Log.Fatal("failed to connect to database", zap.Error(err))
 	}
+	defer db.Close()
 
-	// SQLC, Repo, Service, Handler
+	// SQLC, repository, service, handler
 	queries := generated.New(db)
 	userRepo := repository.NewUserRepository(queries)
 	userService := service.NewUserService(userRepo)
@@ -61,7 +68,8 @@ func main() {
 	routes.Register(app, userHandler)
 
 	// Start server
-	if err := app.Listen(":8080"); err != nil {
+	log.Printf("Starting server on port %s...", cfg.Port)
+	if err := app.Listen(":" + cfg.Port); err != nil {
 		logger.Log.Fatal("failed to start server", zap.Error(err))
 	}
 }
