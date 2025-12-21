@@ -51,6 +51,11 @@ func main() {
 	app.Use(middleware.RequestID())
 	app.Use(middleware.RequestLogger())
 
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("API is running")
+	})
+
+
 	// Database
 	db, err := sql.Open("postgres", cfg.DBUrl)
 	if err != nil {
@@ -72,4 +77,5 @@ func main() {
 	if err := app.Listen(":" + cfg.Port); err != nil {
 		logger.Log.Fatal("failed to start server", zap.Error(err))
 	}
+
 }
